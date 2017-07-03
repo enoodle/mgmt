@@ -54,6 +54,8 @@ func run(c *cli.Context) error {
 	obj.TmpPrefix = c.Bool("tmp-prefix")
 	obj.AllowTmpPrefix = c.Bool("allow-tmp-prefix")
 
+	obj.Noop = c.Bool("noop")
+
 	if _ = c.String("code"); c.IsSet("code") {
 		if obj.GAPI != nil {
 			return fmt.Errorf("can't combine code GAPI with existing GAPI")
@@ -89,13 +91,22 @@ func run(c *cli.Context) error {
 			PuppetConf:  c.String("puppet-conf"),
 		}
 	}
+	if f := c.String("scap"); c.IsSet("scap") {
+		if obj.GAPI != nil {
+			return fmt.Errorf("can't combine scap GAPI with existing GAPI")
+		}
+		obj.GAPI = &scap.GAPI{
+			//SomeArg: &p, // XXX add anything else you want... eg C.String("whatever") or c.Int("whatever2")
+			File: &y,
+		}
+		obj.Noop = true // ALWAYS BE NOOP FOR SCAP
+	}
 	obj.Remotes = c.StringSlice("remote") // FIXME: GAPI-ify somehow?
 
 	obj.NoWatch = c.Bool("no-watch")
 	obj.NoConfigWatch = c.Bool("no-config-watch")
 	obj.NoStreamWatch = c.Bool("no-stream-watch")
 
-	obj.Noop = c.Bool("noop")
 	obj.Sema = c.Int("sema")
 	obj.Graphviz = c.String("graphviz")
 	obj.GraphvizFilter = c.String("graphviz-filter")
@@ -232,6 +243,12 @@ func CLI(program, version string, flags Flags) error {
 					Value: "",
 					Usage: "the path to an alternate puppet.conf file",
 				},
+				cli.StringFlag{
+					Name:  "scap",
+					Value: "",
+					Usage: "XXX whatever",
+				},
+
 				cli.StringSliceFlag{
 					Name:  "remote",
 					Value: &cli.StringSlice{},
