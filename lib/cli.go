@@ -97,7 +97,7 @@ func run(c *cli.Context) error {
 		}
 		obj.GAPI = &scap.GAPI{
 			//SomeArg: &p, // XXX add anything else you want... eg C.String("whatever") or c.Int("whatever2")
-			File: &y,
+			File: &f,
 		}
 		obj.Noop = true // ALWAYS BE NOOP FOR SCAP
 	}
@@ -246,7 +246,7 @@ func CLI(program, version string, flags Flags) error {
 				cli.StringFlag{
 					Name:  "scap",
 					Value: "",
-					Usage: "XXX whatever",
+					Usage: "xccdf file",
 				},
 
 				cli.StringSliceFlag{
